@@ -214,6 +214,7 @@ interface VideoEditorState {
   previewMode: "view" | "transform";
   /** Preview canvas zoom: "fit" auto-fills container, or a percentage (e.g. 50, 100) */
   previewZoom: "fit" | number;
+  exportDialogOpen: boolean;
 
   // Assets
   assets: MediaAsset[];
@@ -247,6 +248,7 @@ interface VideoEditorState {
   setActiveTool: (tool: "select" | "razor") => void;
   setPreviewMode: (mode: "view" | "transform") => void;
   setPreviewZoom: (zoom: "fit" | number) => void;
+  setExportDialogOpen: (open: boolean) => void;
 
   // Actions - Selection
   setSelectedClipIds: (ids: string[]) => void;
@@ -688,6 +690,7 @@ export const useVideoEditorStore = create<VideoEditorState>()(
         activeTool: "select" as const,
         previewMode: "transform" as const,
         previewZoom: "fit",
+        exportDialogOpen: false,
 
         assets: [],
 
@@ -726,6 +729,7 @@ export const useVideoEditorStore = create<VideoEditorState>()(
             scrollY: 0,
             trackHeights: {},
             activeTool: "select" as const,
+            exportDialogOpen: false,
             durationFrames: 900, // 30s at 30fps
           }),
 
@@ -765,6 +769,7 @@ export const useVideoEditorStore = create<VideoEditorState>()(
         setActiveTool: (activeTool) => set({ activeTool }),
         setPreviewMode: (previewMode) => set({ previewMode }),
         setPreviewZoom: (previewZoom) => set({ previewZoom }),
+        setExportDialogOpen: (exportDialogOpen) => set({ exportDialogOpen }),
 
         // Selection actions
         setSelectedClipIds: (ids) =>

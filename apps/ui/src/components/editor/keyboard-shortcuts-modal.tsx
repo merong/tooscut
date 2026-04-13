@@ -64,6 +64,7 @@ const shortcutSections: ShortcutSection[] = [
   {
     title: "Clip Editing",
     shortcuts: [
+      { keys: ["S"], description: "Split selected clip(s) at playhead" },
       { keys: ["Shift", "\u2190"], description: "Nudge clip left 1 frame" },
       { keys: ["Shift", "\u2192"], description: "Nudge clip right 1 frame" },
       { keys: ["Alt", "\u2190"], description: "Nudge clip left 10 frames" },
@@ -77,6 +78,13 @@ const shortcutSections: ShortcutSection[] = [
     shortcuts: [
       { keys: ["V"], description: "Select tool" },
       { keys: ["C"], description: "Razor / Cut tool" },
+    ],
+  },
+  {
+    title: "File",
+    shortcuts: [
+      { keys: [modKey, "I"], description: "Import media" },
+      { keys: [modKey, "E"], description: "Export" },
     ],
   },
   {

@@ -40,7 +40,8 @@ interface ToolbarProps {
 
 export function Toolbar({ showSettingsOnMount }: ToolbarProps) {
   const { projectId } = Route.useParams();
-  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const exportDialogOpen = useVideoEditorStore((s) => s.exportDialogOpen);
+  const setExportDialogOpen = useVideoEditorStore((s) => s.setExportDialogOpen);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ export function Toolbar({ showSettingsOnMount }: ToolbarProps) {
 
   const handleExportClick = useCallback(() => {
     setExportDialogOpen(true);
-  }, []);
+  }, [setExportDialogOpen]);
 
   const handleDeleteSelected = useCallback(() => {
     if (selectedCrossTransition) {

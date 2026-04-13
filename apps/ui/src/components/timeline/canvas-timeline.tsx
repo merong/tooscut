@@ -40,6 +40,7 @@ import { computeSplitLayout, yToSectionTrackIndex } from "./track-layout";
 import {
   useAssetStore,
   importFiles,
+  importFilesWithPicker,
   handleNativeFileDrop,
   addAssetsToStores,
 } from "./use-asset-store";
@@ -139,6 +140,8 @@ export function CanvasTimeline() {
   const duplicateSelectedClips = useVideoEditorStore((s) => s.duplicateSelectedClips);
   const pasteClipsAtPlayhead = useVideoEditorStore((s) => s.pasteClipsAtPlayhead);
   const batchMoveClips = useVideoEditorStore((s) => s.batchMoveClips);
+  const splitClipAtTime = useVideoEditorStore((s) => s.splitClipAtTime);
+  const setExportDialogOpen = useVideoEditorStore((s) => s.setExportDialogOpen);
   const undo = useTemporalStore((s) => s.undo);
   const redo = useTemporalStore((s) => s.redo);
   const trackHeightsMap = useVideoEditorStore((s) => s.trackHeights);
@@ -217,6 +220,23 @@ export function CanvasTimeline() {
       if ((e.metaKey || e.ctrlKey) && e.key === "v") {
         e.preventDefault();
         pasteClipsAtPlayhead();
+        return;
+      }
+
+      // Cmd/Ctrl+I: Import media
+      if ((e.metaKey || e.ctrlKey) && e.key === "i") {
+        e.preventDefault();
+        void (async () => {
+          const imported = await importFilesWithPicker();
+          if (imported.length > 0) addAssetsToStores(imported);
+        })();
+        return;
+      }
+
+      // Cmd/Ctrl+E: Open export dialog
+      if ((e.metaKey || e.ctrlKey) && e.key === "e") {
+        e.preventDefault();
+        setExportDialogOpen(true);
         return;
       }
 
@@ -448,11 +468,29 @@ export function CanvasTimeline() {
       // V: Select tool (only without modifiers)
       if ((e.key === "v" || e.key === "V") && !e.metaKey && !e.ctrlKey) {
         setActiveTool("select");
+        return;
       }
 
       // C: Razor tool (only without modifiers)
       if ((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey) {
         setActiveTool("razor");
+        return;
+      }
+
+      // S: Split selected clips at playhead
+      if ((e.key === "s" || e.key === "S") && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        for (const clipId of selectedClipIds) {
+          const clip = clips.find((c) => c.id === clipId);
+          if (
+            clip &&
+            currentTime > clip.startTime &&
+            currentTime < clip.startTime + clip.duration
+          ) {
+            splitClipAtTime(clipId, currentTime);
+          }
+        }
+        return;
       }
 
       // Home: Jump to start
@@ -498,6 +536,8 @@ export function CanvasTimeline() {
     setClipTransitionOut,
     selectedCrossTransition,
     removeCrossTransitionById,
+    splitClipAtTime,
+    setExportDialogOpen,
   ]);
 
   // Combine tracks with full IDs for drop target calculation (ascending by index)
