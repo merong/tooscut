@@ -36,6 +36,8 @@
     "apps/ui/src/components/ui/input.tsx",
     "apps/ui/src/components/ui/numeric-input.tsx",
     "apps/ui/src/components/ui/color-input.tsx",
-    "apps/ui/src/components/ui/tooltip.tsx"
+    "apps/ui/src/components/ui/tooltip.tsx",
+    "apps/docs/source.generated.ts",
+    "apps/docs/src/components/mdx.tsx"
   ]
 }
