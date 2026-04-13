@@ -253,60 +253,83 @@ async function main() {
   await fullshot(page, "shape-on-canvas.png");
 
   // ── Keyframe buttons ────────────────────────────────────────────────
-  // Add keyframes to the X property by:
-  // 1. Select rectangle, go to Shape tab
-  // 2. Move playhead to start of clip, click diamond on X to add keyframe
-  // 3. Move playhead forward, change X value (auto-adds second keyframe)
-  // 4. Move playhead between keyframes to show half-filled state
+  // Animate the stroke Width on the rectangle with two different values:
+  // 1. Move playhead to clip start, set Width to 2, click its keyframe diamond
+  // 2. Move playhead to ~3s, set Width to 20 (auto-adds second keyframe)
+  // 3. Move playhead between them for half-filled diamond screenshot
+  // 4. Open curve editor to show the actual curve
   console.log("\n[animation/keyframing] Keyframe buttons");
-  await clickTimeline(page, TRACK_HEADER_WIDTH + 20, v1Y); // select rectangle
+
+  // Helper to set a NumericInput value by label
+  async function setNumericInPanel(panel, labelText, value) {
+    const row = panel.locator(`span.text-xs:has-text("${labelText}")`).first().locator("..");
+    const numInput = row.locator('div[class*="cursor-ew-resize"]').first();
+    if (!(await numInput.isVisible().catch(() => false))) return false;
+    await numInput.dblclick();
+    await page.waitForTimeout(200);
+    const input = row.locator("input").first();
+    await input.fill(String(value));
+    await input.press("Enter");
+    await page.waitForTimeout(300);
+    return true;
+  }
+
+  // Helper to click the keyframe diamond next to a specific property label
+  async function clickKeyframeDiamond(panel, labelText) {
+    const row = panel.locator(`span.text-xs:has-text("${labelText}")`).first().locator("..");
+    const diamond = row.locator('button[title="Add keyframe"], button[title="Remove keyframe"]').first();
+    if (!(await diamond.isVisible().catch(() => false))) return false;
+    await diamond.click();
+    await page.waitForTimeout(300);
+    return true;
+  }
+
+  // Select rectangle and go to Shape tab
+  await clickTimeline(page, TRACK_HEADER_WIDTH + 20, v1Y);
   await page.waitForTimeout(300);
 
   if (await clickPropsTab(page, "Shape")) {
     const panel = propsPanel(page);
 
-    // Move playhead to the start of the rectangle clip
+    // Step 1: Move playhead to clip start, set Width=2, add keyframe
     await clickTimeline(page, TRACK_HEADER_WIDTH + 20, RULER_HEIGHT / 2);
     await page.waitForTimeout(200);
-    // Re-select the clip (clicking ruler deselects)
-    await clickTimeline(page, TRACK_HEADER_WIDTH + 20, v1Y);
+    await clickTimeline(page, TRACK_HEADER_WIDTH + 20, v1Y); // re-select
     await page.waitForTimeout(300);
 
-    // Click the "Add keyframe" diamond on the X property
-    const xDiamond = panel.locator('button[title="Add keyframe"]').first();
-    if (await xDiamond.isVisible().catch(() => false)) {
-      await xDiamond.click();
+    await setNumericInPanel(panel, "Width", 2);
+    await clickKeyframeDiamond(panel, "Width");
+
+    // Step 2: Move playhead to ~3s, set Width=20 (auto-adds second keyframe)
+    await clickTimeline(page, TRACK_HEADER_WIDTH + 170, RULER_HEIGHT / 2);
+    await page.waitForTimeout(200);
+    await clickTimeline(page, TRACK_HEADER_WIDTH + 80, v1Y); // re-select
+    await page.waitForTimeout(300);
+
+    await setNumericInPanel(panel, "Width", 20);
+
+    // Step 3: Move playhead between keyframes for half-filled state
+    await clickTimeline(page, TRACK_HEADER_WIDTH + 100, RULER_HEIGHT / 2);
+    await page.waitForTimeout(200);
+    await clickTimeline(page, TRACK_HEADER_WIDTH + 80, v1Y); // re-select
+    await page.waitForTimeout(300);
+
+    await shot(page, panel, "keyframe-buttons-active.png");
+
+    // Step 4: Open curve editor
+    console.log("[animation/keyframing] Curve editor");
+    const curvesBtn = page.locator('button:has-text("Curves")').first();
+    if (await curvesBtn.isVisible().catch(() => false)) {
+      await curvesBtn.click();
+      await page.waitForTimeout(500);
+
+      const timelinePanel = page.locator("div.flex.h-full.w-full.overflow-hidden").last();
+      await shot(page, timelinePanel, "keyframe-curve-editor.png");
+
+      await curvesBtn.click();
       await page.waitForTimeout(300);
-
-      // Move playhead to ~3s into the clip
-      await clickTimeline(page, TRACK_HEADER_WIDTH + 170, RULER_HEIGHT / 2);
-      await page.waitForTimeout(200);
-      // Re-select the clip
-      await clickTimeline(page, TRACK_HEADER_WIDTH + 80, v1Y);
-      await page.waitForTimeout(300);
-
-      // Change the X value to create a second keyframe (double-click the X NumericInput)
-      const xRow = panel.locator('span.text-xs:has-text("X")').first().locator("..");
-      const xNumInput = xRow.locator('div[class*="cursor-ew-resize"]').first();
-      if (await xNumInput.isVisible().catch(() => false)) {
-        await xNumInput.dblclick();
-        await page.waitForTimeout(200);
-        const xInput = xRow.locator("input").first();
-        await xInput.fill("60");
-        await xInput.press("Enter");
-        await page.waitForTimeout(300);
-      }
-
-      // Now move playhead between the two keyframes to show half-filled state
-      await clickTimeline(page, TRACK_HEADER_WIDTH + 100, RULER_HEIGHT / 2);
-      await page.waitForTimeout(200);
-      // Re-select the clip
-      await clickTimeline(page, TRACK_HEADER_WIDTH + 80, v1Y);
-      await page.waitForTimeout(300);
-
-      await shot(page, panel, "keyframe-buttons-active.png");
     } else {
-      console.log("  ⓘ No keyframe diamond found");
+      console.log("  ⓘ Curves button not visible");
     }
   }
 
