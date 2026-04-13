@@ -25,6 +25,11 @@ export function Header() {
           <span className="font-semibold tracking-tight">Tooscut</span>
         </a>
         <div className="flex items-center gap-2">
+          <Button variant="ghost" asChild>
+            <a href="https://docs.tooscut.app" target="_blank" rel="noopener">
+              Docs
+            </a>
+          </Button>
           <Button variant="outline" asChild>
             <a href="https://github.com/mohebifar/tooscut" target="_blank" rel="noopener">
               <GithubIcon className="h-4 w-4" />

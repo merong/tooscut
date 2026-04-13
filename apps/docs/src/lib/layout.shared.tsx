@@ -13,13 +13,19 @@ export function baseOptions(): BaseLayoutProps {
           {appName}
         </span>
       ),
+      url: "/docs",
       transparentMode: "top",
     },
     links: [
       { text: "Docs", url: "/docs", active: "nested-url" },
       { text: "Blog", url: "/blog", active: "nested-url" },
       {
-        text: "GitHub",
+        text: "Tooscut App",
+        url: `https://tooscut.app`,
+        external: true,
+      },
+      {
+        text: "Source on GitHub",
         url: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
         external: true,
       },

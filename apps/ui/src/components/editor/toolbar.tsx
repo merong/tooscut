@@ -9,6 +9,7 @@ import {
   DownloadIcon,
   ChevronLeft,
   Keyboard,
+  BookIcon,
 } from "lucide-react";
 import { useState, useCallback, useRef, useEffect } from "react";
 
@@ -273,6 +274,13 @@ export function Toolbar({ showSettingsOnMount }: ToolbarProps) {
                 Keyboard Shortcuts
                 <MenubarShortcut>?</MenubarShortcut>
               </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem asChild>
+                <a href="https://docs.tooscut.app" target="_blank" rel="noopener">
+                  <BookIcon className="mr-2 h-4 w-4" />
+                  Documentation
+                </a>
+              </MenubarItem>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
@@ -354,6 +362,13 @@ export function Toolbar({ showSettingsOnMount }: ToolbarProps) {
         </Tooltip>
 
         <div className="flex-1" />
+
+        {/* Docs link */}
+        <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
+          <a href="https://docs.tooscut.app" target="_blank" rel="noopener">
+            Docs
+          </a>
+        </Button>
 
         {/* Export button */}
         <Tooltip>
