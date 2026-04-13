@@ -26,7 +26,6 @@ export default defineConfig({
       prerender: {
         enabled: true,
         crawlLinks: true,
-        entries: ["/docs", "/blog"],
       },
     }),
     viteReact(),

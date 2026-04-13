@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -36,12 +42,14 @@ const ApiSearchRoute = ApiSearchRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/api/search': typeof ApiSearchRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
   '/blog/': typeof BlogIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/api/search': typeof ApiSearchRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
@@ -49,6 +57,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/api/search': typeof ApiSearchRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/docs/$': typeof DocsSplatRoute
@@ -56,13 +65,14 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/api/search' | '/blog/$slug' | '/docs/$' | '/blog/'
+  fullPaths: '/' | '/api/search' | '/blog/$slug' | '/docs/$' | '/blog/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/api/search' | '/blog/$slug' | '/docs/$' | '/blog'
-  id: '__root__' | '/api/search' | '/blog/$slug' | '/docs/$' | '/blog/'
+  to: '/' | '/api/search' | '/blog/$slug' | '/docs/$' | '/blog'
+  id: '__root__' | '/' | '/api/search' | '/blog/$slug' | '/docs/$' | '/blog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   ApiSearchRoute: typeof ApiSearchRoute
   BlogSlugRoute: typeof BlogSlugRoute
   DocsSplatRoute: typeof DocsSplatRoute
@@ -71,6 +81,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
@@ -103,6 +120,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   ApiSearchRoute: ApiSearchRoute,
   BlogSlugRoute: BlogSlugRoute,
   DocsSplatRoute: DocsSplatRoute,
