@@ -1,9 +1,10 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 
+import { GithubIcon } from "lucide-react";
+
 import { Logo } from "@/components/logo";
 
 import { appName, gitConfig } from "./shared";
-import { GithubIcon } from "lucide-react";
 
 function DiscordIcon({ className }: { className?: string }) {
   return (
